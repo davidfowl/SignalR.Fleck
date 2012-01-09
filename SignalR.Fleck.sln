@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalR.Fleck", "SignalR.Fleck\SignalR.Fleck.csproj", "{1F7F8229-758E-4A8B-BEBE-B2005903B162}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1F7F8229-758E-4A8B-BEBE-B2005903B162}.Debug|x86.ActiveCfg = Debug|x86
+		{1F7F8229-758E-4A8B-BEBE-B2005903B162}.Debug|x86.Build.0 = Debug|x86
+		{1F7F8229-758E-4A8B-BEBE-B2005903B162}.Release|x86.ActiveCfg = Release|x86
+		{1F7F8229-758E-4A8B-BEBE-B2005903B162}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
