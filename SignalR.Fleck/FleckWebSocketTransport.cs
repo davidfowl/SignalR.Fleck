@@ -118,7 +118,7 @@ namespace SignalR.Fleck
                 {
                     if (task.IsFaulted)
                     {
-                        tcs.SetResult(task.Exception);
+                        tcs.SetException(task.Exception);
                     }
                     else if (task.IsCanceled)
                     {
@@ -130,7 +130,7 @@ namespace SignalR.Fleck
                         {
                             if (innerTask.IsFaulted)
                             {
-                                tcs.SetResult(innerTask.Exception);
+                                tcs.SetException(innerTask.Exception);
                             }
                             else if (innerTask.IsCanceled)
                             {
