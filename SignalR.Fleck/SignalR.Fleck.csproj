@@ -35,17 +35,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Fleck">
-      <HintPath>..\lib\Fleck\src\Fleck\bin\Debug\Fleck.dll</HintPath>
+    <Reference Include="Fleck, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\lib\Fleck.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.0.4.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\lib\SignalR\SignalR.SelfHost\bin\Debug\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="SignalR">
-      <HintPath>..\lib\SignalR\SignalR.SelfHost\bin\Debug\SignalR.dll</HintPath>
+    <Reference Include="SignalR, Version=0.3.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\lib\SignalR.dll</HintPath>
     </Reference>
-    <Reference Include="SignalR.SelfHost">
-      <HintPath>..\lib\SignalR\SignalR.SelfHost\bin\Debug\SignalR.SelfHost.dll</HintPath>
+    <Reference Include="SignalR.SelfHost, Version=0.3.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\lib\SignalR.SelfHost.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
