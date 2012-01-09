@@ -39,64 +39,6 @@ namespace SignalR
             return task;
         }
 
-        #region Legacy Task.Then() extensions, don't use these
-
-        public static Task<TResult> Then<TResult>(this Task task, Func<Task, TResult> successor)
-        {
-            switch (task.Status)
-            {
-                case TaskStatus.Faulted:
-                    return FromError<TResult>(task.Exception);
-
-                case TaskStatus.Canceled:
-                    return Canceled<TResult>();
-
-                case TaskStatus.RanToCompletion:
-                    return FromMethod(successor, task);
-
-                default:
-                    return task.ContinueWith(t => successor(t), TaskContinuationOptions.OnlyOnRanToCompletion);
-            }
-        }
-
-        public static Task<TResult> Then<T, TResult>(this Task<T> task, Func<Task<T>, TResult> successor)
-        {
-            switch (task.Status)
-            {
-                case TaskStatus.Faulted:
-                    return FromError<TResult>(task.Exception);
-
-                case TaskStatus.Canceled:
-                    return Canceled<TResult>();
-
-                case TaskStatus.RanToCompletion:
-                    return FromMethod(successor, task);
-
-                default:
-                    return task.ContinueWith(t => successor(t), TaskContinuationOptions.OnlyOnRanToCompletion);
-            }
-        }
-
-        public static Task Then<TResult>(this Task<TResult> task, Action<Task<TResult>> successor)
-        {
-            switch (task.Status)
-            {
-                case TaskStatus.Faulted:
-                    return FromError<TResult>(task.Exception);
-
-                case TaskStatus.Canceled:
-                    return Canceled<TResult>();
-
-                case TaskStatus.RanToCompletion:
-                    return FromMethod(successor, task);
-
-                default:
-                    return task.ContinueWith(t => successor(t), TaskContinuationOptions.OnlyOnRanToCompletion);
-            }
-        }
-
-        #endregion
-
         public static void ContinueWith(this Task task, TaskCompletionSource<object> tcs)
         {
             task.ContinueWith(t =>
