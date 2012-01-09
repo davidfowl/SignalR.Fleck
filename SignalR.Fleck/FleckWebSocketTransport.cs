@@ -102,11 +102,11 @@ namespace SignalR.Fleck
                                               .Catch();
         }
 
-        private Task ProcessMessages(long? messageId, IReceivingConnection connection, TaskCompletionSource<object> tcs)
+        private void ProcessMessages(long? messageId, IReceivingConnection connection, TaskCompletionSource<object> taskCompletionSource)
         {
             if (_disconnected)
             {
-                tcs.SetResult(null);
+                taskCompletionSource.SetResult(null);
             }
             else
             {
@@ -114,38 +114,28 @@ namespace SignalR.Fleck
                                                        connection.ReceiveAsync(messageId.Value) :
                                                        connection.ReceiveAsync();
 
-                receiveTask.ContinueWith(task =>
-                {
-                    if (task.IsFaulted)
-                    {
-                        tcs.SetException(task.Exception);
-                    }
-                    else if (task.IsCanceled)
-                    {
-                        tcs.SetCanceled();
-                    }
-                    else
-                    {
-                        Send(task.Result).ContinueWith(innerTask =>
-                        {
-                            if (innerTask.IsFaulted)
-                            {
-                                tcs.SetException(innerTask.Exception);
-                            }
-                            else if (innerTask.IsCanceled)
-                            {
-                                tcs.SetCanceled();
-                            }
-                            else
-                            {
-                                ProcessMessages(task.Result.MessageId, connection, tcs);
-                            }
-                        });
-                    }
-                });
-            }
 
-            return tcs.Task;
+                var receiveState = new
+                {
+                    Connection = connection,
+                    Tcs = taskCompletionSource
+                };
+
+                receiveTask.Then(response => Send(response).Then((state, resp) => ProcessMessages(resp.MessageId, state.Connection, state.Tcs), receiveState, response))
+                           .FastUnwrap()
+                           .ContinueWith(task =>
+                           {
+                               if (task.IsCanceled)
+                               {
+                                   taskCompletionSource.SetCanceled();
+                               }
+                               else if (task.IsFaulted)
+                               {
+                                   taskCompletionSource.SetException(task.Exception);
+                               }
+                           },
+                           TaskContinuationOptions.NotOnRanToCompletion);
+            }
         }
     }
 }
