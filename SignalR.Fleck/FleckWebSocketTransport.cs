@@ -56,8 +56,8 @@ namespace SignalR.Fleck
                 }
                 else
                 {
-                    // Just raise the event if there's no handler
-                    taskCompletionSource.SetResult(null);
+                    // Just process messages if there's no handler
+                    ProcessMessages(null, connection, taskCompletionSource);
                 }
             };
 
