@@ -56,14 +56,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\lib\SignalR\SignalR\TaskAsyncHelper.cs">
-      <Link>TaskAsyncHelper.cs</Link>
-    </Compile>
     <Compile Include="FileServer.cs" />
     <Compile Include="FleckWebSocketTransport.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FleckWebSocketRequest.cs" />
+    <Compile Include="TaskAsyncHelper.cs" />
     <Compile Include="www\public\Hubs\MouseTracking\MouseTracking.cs" />
     <Compile Include="www\public\Raw\Raw.cs" />
   </ItemGroup>
