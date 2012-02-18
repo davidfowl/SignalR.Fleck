@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web;
-using SignalR.Abstractions;
 using Newtonsoft.Json;
+using SignalR.Hosting;
 
 namespace SignalR.Samples.Raw
 {
@@ -12,7 +12,7 @@ namespace SignalR.Samples.Raw
         private static readonly Dictionary<string, string> _users = new Dictionary<string, string>();
         private static readonly Dictionary<string, string> _clients = new Dictionary<string, string>();
 
-        protected override Task OnConnectedAsync(IRequest request, string connectionId)
+        protected override Task OnConnectedAsync(IRequest request, IEnumerable<string> groups, string connectionId)
         {
             var userName = request.Cookies["user"];
             if (!String.IsNullOrEmpty(userName))

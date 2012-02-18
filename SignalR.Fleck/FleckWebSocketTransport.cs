@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Fleck;
-using SignalR.Abstractions;
 using SignalR.Transports;
+using SignalR.Hosting;
 
 namespace SignalR.Fleck
 {
@@ -52,12 +52,12 @@ namespace SignalR.Fleck
             {
                 if (Connected != null)
                 {
-                    Connected().Then((conn, tcs) => ProcessMessages(null, conn, tcs), connection, taskCompletionSource);
+                    TaskAsyncHelper.Interleave(ProcessMessages, Connected, connection).ContinueWith(taskCompletionSource);
                 }
                 else
                 {
                     // Just process messages if there's no handler
-                    ProcessMessages(null, connection, taskCompletionSource);
+                    ProcessMessages(connection).ContinueWith(taskCompletionSource);
                 }
             };
 
@@ -92,6 +92,8 @@ namespace SignalR.Fleck
             return taskCompletionSource.Task;
         }
 
+        public Func<Task> Reconnected { get; set; }
+
         public Func<string, Task> Received { get; set; }
 
         public Task Send(object value)
@@ -102,7 +104,14 @@ namespace SignalR.Fleck
                                               .Catch();
         }
 
-        private void ProcessMessages(long? messageId, IReceivingConnection connection, TaskCompletionSource<object> taskCompletionSource)
+        private Task ProcessMessages(IReceivingConnection connection, Action postReceive = null)
+        {
+            var tcs = new TaskCompletionSource<object>();
+            ProcessMessages(null, connection, tcs, postReceive);
+            return tcs.Task;
+        }
+
+        private void ProcessMessages(string messageId, IReceivingConnection connection, TaskCompletionSource<object> taskCompletionSource, Action postReceive = null)
         {
             if (_disconnected)
             {
@@ -110,9 +119,14 @@ namespace SignalR.Fleck
             }
             else
             {
-                Task<PersistentResponse> receiveTask = messageId.HasValue ?
-                                                       connection.ReceiveAsync(messageId.Value) :
+                Task<PersistentResponse> receiveTask = !String.IsNullOrEmpty(messageId) ?
+                                                       connection.ReceiveAsync(messageId) :
                                                        connection.ReceiveAsync();
+
+                if (postReceive != null)
+                {
+                    postReceive();
+                }
 
 
                 var receiveState = new
@@ -122,7 +136,6 @@ namespace SignalR.Fleck
                 };
 
                 receiveTask.Then(response => Send(response).Then((state, resp) => ProcessMessages(resp.MessageId, state.Connection, state.Tcs), receiveState, response))
-                           .FastUnwrap()
                            .ContinueWith(task =>
                            {
                                if (task.IsCanceled)

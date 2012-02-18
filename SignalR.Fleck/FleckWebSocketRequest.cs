@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using Fleck;
-using SignalR.Abstractions;
+using SignalR.Hosting;
 
 namespace SignalR.Fleck
 {

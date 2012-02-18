@@ -2,10 +2,10 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Fleck;
-using SignalR.Abstractions;
+using SignalR.Hosting;
+using SignalR.Hosting.Self;
 using SignalR.Infrastructure;
 using SignalR.Samples.Raw;
-using SignalR.SelfHost;
 using SignalR.Transports;
 
 namespace SignalR.Fleck
@@ -42,6 +42,9 @@ namespace SignalR.Fleck
                 PersistentConnection connection;
                 if (server.TryGetConnection(socket.ConnectionInfo.Path, out connection))
                 {
+                    // Initalize the connection
+                    connection.Initialize(server.DependencyResolver);
+
                     var req = new FleckWebSocketRequest(socket.ConnectionInfo, wss.IsSecure);
                     var hostContext = new HostContext(req, null, null);
 
@@ -68,8 +71,11 @@ namespace SignalR.Fleck
             });
 
 
+            // HACK: Need to make it easier to plug this in cleaner
+            var transportManager = (TransportManager)server.DependencyResolver.Resolve<ITransportManager>();
+
             // Register the websocket transport
-            TransportManager.Default.Register("webSockets", GetFleckWebSocketTransport);
+            transportManager.Register("webSockets", context => GetFleckWebSocketTransport(server.DependencyResolver, context));
 
             server.MapConnection<Raw>("/raw");
             server.EnableHubs();
@@ -85,9 +91,9 @@ namespace SignalR.Fleck
             fileServer.Stop();
         }
 
-        private static ITransport GetFleckWebSocketTransport(HostContext hostContext)
+        private static ITransport GetFleckWebSocketTransport(IDependencyResolver resolver, HostContext hostContext)
         {
-            var serializer = DependencyResolver.Resolve<IJsonSerializer>();
+            var serializer = resolver.Resolve<IJsonSerializer>();
             return new FleckWebSocketTransport(hostContext, serializer);
         }
     }
